@@ -24,9 +24,11 @@ async function main() {
     
 }
 
+
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));
 app.use(express.urlencoded({extended : true}))
+app.use(express.json());
 app.use(methodoverride("_method"));
 app.engine("ejs",ejsMate);
 app.use(express.static(path.join(__dirname,"/public")));
@@ -34,9 +36,22 @@ app.use(express.static(path.join(__dirname,"/public")));
 
 
 
+
+
 app.get("/",(req,res)=>{
     res.send("ready")
 })
+
+const validateListing = (req,res,next)=>{
+    let {error} = listingSchema.validate(req.body);
+ console.log(error);
+ if(error){
+    let errMsg =error.details.map((el)=>el.message).join(",");
+    throw new ExpressError(400,errMsg);
+ }else{
+    next();
+ }
+}
 
 
 //index route
@@ -61,10 +76,10 @@ app.get("/listings/:id",wrapAsync(async(req,res)=>{
 //create route
 app.post(
     "/listings",
+    validateListing,
     wrapAsync(async(req,res,next)=>{
 
- let result = listingSchema.validate(req.body);
- console.log(result);
+ 
     const LLListing =new listing(req.body.listing);
     await LLListing.save();
     res.redirect("/listings");
@@ -80,7 +95,9 @@ app.get("/listings/:id/edit",wrapAsync(async(req,res)=>{
 })  );
 
 //Update route
-app.put("/listings/:id/",wrapAsync(async(req,res)=>{
+app.put("/listings/:id/",
+   validateListing,
+    wrapAsync(async(req,res)=>{
     let {id} =req.params;
     await listing.findByIdAndUpdate(id,{...req.body.listing})
     res.redirect(`/listings/${id}`);
@@ -115,12 +132,25 @@ app.all("*", (req, res, next) => {
     next(new ExpressError(404, "Page Not Found"));
 });
 
-app.use((err, req, res, next) => {
-    let { statusCode = 500, message = "Something went wrong" } = err;
-    res.status(statusCode).render("listings/err.ejs", { message });
-    // Alternative plain-text response:
-    res.status(statusCode).send(message);
-});
+// app.use((err, req, res, next) => {
+//     let { statusCode = 500, message = "Something went wrong" } = err;
+//     res.status(statusCode).render("listings/err.ejs", { message });
+//     // Alternative plain-text response:
+//     res.status(statusCode).send(message);
+
+
+    app.use((err, req, res, next) => {
+        let { statusCode = 500, message = "Something went wrong" } = err;
+        res.status(statusCode).render("listings/err.ejs", { message });
+    });
+   
+    // app.use((err, req, res, next) => {
+    //     let { statusCode = 500, message = "Something went wrong" } = err;
+    //     res.status(statusCode).render("listings/err.ejs", { message });
+    // });
+    
+    
+// });
 
 
 

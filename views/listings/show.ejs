@@ -3,7 +3,7 @@
 
   <div class="row">
     <div class="col-8 offset-2">
-    <h3>listin details</h3>
+    <h3><b><li ><%= llisting.title %></li></b> </h3>
   </div>
     <div class="card col-6 offset-2">
         <img src="<%= llisting.image  %>>" class="card-img-top show-img" alt="listing_image">
@@ -13,7 +13,7 @@
       </div>
 <div class="col-6 offset-2">
     <ul>
-        <b><li ><%= llisting.title %></li></b>
+        
         <li><%= llisting.description %></li>
         <li>&#8377;<%= llisting.price ? llisting.price.toLocaleString("en-IN") : "N/A" %></li>
       <li><%= llisting.location %></li>
