@@ -1,38 +1,68 @@
 <% layout("/layouts/boilerplate") %>
-<body>
 
-  <div class="row">
-    <div class="col-8 offset-2">
-    <h3><b><li ><%= llisting.title %></li></b> </h3>
-  </div>
-    <div class="card col-6 offset-2">
+  <body>
+
+    <div class="row">
+      <div class="col-8 offset-2">
+        <h3><b>
+            <li>
+              <%= llisting.title %>
+            </li>
+          </b> </h3>
+      </div>
+      <div class="card col-6 offset-2">
         <img src="<%= llisting.image  %>>" class="card-img-top show-img" alt="listing_image">
         <div class="card-body">
           <p class="card-text"></p>
         </div>
       </div>
-<div class="col-6 offset-2">
-    <ul>
-        
-        <li><%= llisting.description %></li>
-        <li>&#8377;<%= llisting.price ? llisting.price.toLocaleString("en-IN") : "N/A" %></li>
-      <li><%= llisting.location %></li>
-        <li><%= llisting.country %></li>
+      <div class="col-6 offset-2">
+        <ul>
 
-    </ul>
-    <br><br><br>
-    <div class="col-1 offset-0 op">
-    <a href="/listings/<%=llisting._id %>/edit" class="btn btn-dark "> Edit </a>
-  
-    <form method="post" action="/listings/<%= llisting._id %>?_method=DELETE" >
-        <button class=" btn btn-dark  offset-2 ">Delete</button>
+          <li>
+            <%= llisting.description %>
+          </li>
+          <li>&#8377;<%= llisting.price ? llisting.price.toLocaleString("en-IN") : "N/A" %>
+          </li>
+          <li>
+            <%= llisting.location %>
+          </li>
+          <li>
+            <%= llisting.country %>
+          </li>
+
+        </ul>
+        <br><br><br>
+        <div class="col-1 offset-0 op">
+          <a href="/listings/<%=llisting._id %>/edit" class="btn btn-dark "> Edit </a>
+
+          <form method="post" action="/listings/<%= llisting._id %>?_method=DELETE">
+            <button class=" btn btn-dark  offset-2 ">Delete</button>
+        </div>
       </div>
+      </form>
+
     </div>
-    </form>
-    
-  </div>
+<hr>
+    <div class="col-8 offset-2 mb-3">
+      <h4>Leaving a Review</h4>
+
+      <form action="/listings/<%=llisting._id %>/reviews" method="post">
+        <div class="mb-3 mt-3">
+          <label for="rating" class="form-label ">Rating</label>
+          <input type="range" min="1" max="5" id="rating" name="review[rating]" class="form-range" >
+        </div>
+
+        <div class="mb-3 mt-3">
+          <label for="comment" class="form-label">Comment</label>
+          <textarea name="review[comment]" id="comment" cols="30" rows="5" class="form-control"></textarea>
+        </div>
+        <button class="btn btn-outline-dark">Submit</button>
+      </form>
+    </div>
 
 
 
-</body>
-</html>
+  </body>
+
+  </html>
