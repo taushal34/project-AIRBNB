@@ -5,10 +5,18 @@
       
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-link "  href="/"><b>Homee</b></a>
+          <a class="nav-link "  href="/listings"><b>Homee</b></a>
           <a class="nav-link" href="/listings">All Listings</a>
           <a class="nav-link" href="/listings/new">Add New Listings</a>
-         
+        </div>
+        <div class="navbar-nav ms-auto">
+          <%if(!currentUser){ %>
+          <a class="nav-link "  href="/signup"><b>Signup</b></a>
+          <a class="nav-link" href="/login">Login</a>
+          <% } %>
+          <%if(currentUser){ %>
+          <button class="btn btn-danger btn-sm "><a class="nav-link" href="/logout"><b>LogOut</b></a></button>
+          <% } %>
         </div>
       </div>
     </div>

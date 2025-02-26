@@ -22,17 +22,31 @@ const validateReviews= (req, res, next) => {
 //review Route
 //POST 
 
-router.post("/",validateReviews, async (req, res) => {
+router.post("/",validateReviews, wrapAsync(async (req, res) => {
     let listing = await Listing.findById(req.params.id);
     let newReview = new Review(req.body.review);
     listing.reviews.push(newReview);
 
     await newReview.save();
     await listing.save();
-
+    req.flash("success","new Review created!");
     res.redirect(`/listings/${listing._id}`);
-});
+}));
 
+// app.post("/listings/:id/reviews", validateReview, wrapAsync(async(req,res)=>{
+//     let listing =await Listing.findById(req.params.id);
+//     let newReview = new Review(req.body.review);
+
+//     listing.reviews.push(newReview);
+
+//     await newReview.save();
+//     await listing.save();
+
+//     console.log("new review saved");
+//     res.send("new review saved");
+
+
+//     }));
 
 //review Route
 //for delete 

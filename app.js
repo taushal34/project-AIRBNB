@@ -10,11 +10,22 @@ const ExpressError = require("./utils/ExpressError.js");
 // const { listingSchema } = require("./scema.js");
 // const Review = require("./models/review.js");
 // const Listing = require("./models/listing.js");
+const session = require("express-session");
+const flash = require("connect-flash");
+const passport=require("passport");
+const localStrategy = require("passport-local");
+const User = require("./routes/user.js")
 
 
-const listings = require("./routes/listing.js");
-const reviews = require("./routes/review.js");
-// const review = require("./models/review.js");
+
+
+
+
+
+const listingsRouter = require("./routes/listing.js");
+const reviewsRouter = require("./routes/review.js");
+const uuserRouter = require("./routes/uuser.js");
+
 
 let mongo_url = "mongodb://127.0.0.1:27017/wonderlust"
 
@@ -39,15 +50,54 @@ app.use(methodoverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
-
+const sesssionOptions = {
+    secret :"mysupersecret",
+    resave : false,
+    saveUninitialized: true,
+    cookie :{
+        expires : Date.now() + 7 *24*60*60*1000,
+        maxAge : 7*24*60*60*1000,
+        httpOnly: true
+    }
+};
 
 app.get("/", (req, res) => {
     res.send("ready")
 })
 
+app.use(session(sesssionOptions));
+app.use(flash());
 
-app.use("/listings",listings);
-app.use("/listings/:id/reviews",reviews);
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy (User.authenticate()))
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use((req,res,next)=>{
+    res.locals.success=req.flash("success");
+    res.locals.error=req.flash("error");
+    res.locals.deleted=req.flash("deleted");
+    res.locals.currentUser = req.user;
+    next();
+});
+
+// app.get("/demouser",async(req,res)=>{
+//     let fakeUser = new User({
+//        email : "user@gmail.com",
+//        username : "Delta-Taushal" 
+//     });
+
+//     let registeredUser = await User.register(fakeUser,"PASSWORD");
+//     res.send(registeredUser);
+// })
+
+
+app.use("/listings",listingsRouter);
+app.use("/listings/:id/reviews",reviewsRouter);
+app.use("/",uuserRouter);
 
 
 // app.get("/testlisting",async(req,res)=>{
@@ -89,10 +139,6 @@ app.use((err, req, res, next) => {
 
 
 // });
-
-
-
-
 
 app.listen(8080, () => {
     console.log("server is start")
